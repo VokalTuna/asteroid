@@ -1,8 +1,10 @@
+from turtle import update
 import pygame
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from constants import *
 from player import Player
+from shot import Shot
 
 def main():
     pygame.init()
@@ -11,9 +13,12 @@ def main():
     drawable = pygame.sprite.Group()
     updateable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
+    shots = pygame.sprite.Group()
+
     Asteroid.containers = (asteroids, drawable, updateable)
     AsteroidField.containers = updateable
     Player.containers = (drawable, updateable)
+    Shot.containers = (shots,drawable,updateable)
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT/2)
     asteroid_field = AsteroidField()
     dt = 0
@@ -24,6 +29,11 @@ def main():
                 return
         updateable.update(dt)
         for obj in asteroids:
+            for shot in shots:
+                if obj.collision(shot):
+                    obj.split()
+                    shot.kill()
+
             if obj.collision(player):
                 print("Game over!")
                 return
